@@ -1,44 +1,32 @@
 int main(){
-    int i;
-int ch =1;
-    int NO_OF_P;
-pthread_mutex_init(&p,NULL);
-
-while(ch==1)
-  { printf("Enter the number of threads\n"); 
-  	fflush(stdin);
-  	scanf("%d",&NO_OF_P);
-fflush(stdin);	
-if(isalpha(NO_OF_P)!=0){
-printf("***character is entered***\n ||Run the program again||\n");
-return(0);
-}
-else{
-	fflush(stdin);
-  	if(NO_OF_P>900||NO_OF_P<0)
-  	printf("Enter A integer VALUE LESS THAN 900 OR GREATER THAN 0\n");
-
-
-  	else 
-  	{
+	int i;
+	int ch =1;
+	int n;
+	pthread_mutex_init(&p,NULL);
+	while(ch==1){
+		printf("||Enter The Number Of Threads You Want To Process||\n"); 
+		fflush(stdin);
+		scanf("%d",&n);
+		
 	
-    fflush(stdin);
-    pthread_t process[NO_OF_P];
-    srand(time(NULL));
-    for(i=0; i<NO_OF_P; i++){
-        if(pthread_create(&process[i],NULL,threadRoutine,(void*)&i))
-            return -1*printf("Error in thread %d creation!!!\n",i);    
-    }
-
-    for(i=0; i<NO_OF_P; i++)
-        pthread_join(process[i],NULL);
-    }}
-    printf("\n");
-printf("Enter 1 to continue or press any key to exit\n");
-scanf("%d",&ch);
+		fflush(stdin);
+		if(n>900||n<0)
+			printf("Enter A integer Value LESSER than 900 or GREATER than 0\n");
+		else{
+			fflush(stdin);
+			pthread_t process[n];
+			for(i=0; i<n; i++){
+				if(pthread_create(&process[i],NULL,threadCreate,(void*)&i))
+				return -1*printf("!!!ERROR IN THREAD %d CREATION!!!\n",i);    
+			}
+			for(i=0; i<n; i++)
+				pthread_join(process[i],NULL);
+		}
+	
+		printf("\n");
+		printf("Enter 1 To Continue Or Press Any Key To Exit\n");
+		scanf("%d",&ch);
+	}
+	printf("SUCCESSFULLY ENDED\n");
+	exit(0);
 }
-    
-    
-    printf("SUCCESSFULLY EXECUTED\n");
-    exit(0);
-    }
