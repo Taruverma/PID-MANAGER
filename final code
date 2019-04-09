@@ -1,0 +1,92 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#include<unistd.h>
+#include<pthread.h>
+#include<ctype.h>
+#define MIN_P 100
+#define MAX_P 1000
+
+int pid[MAX_P-MIN_P]={0};
+pthread_mutex_t p;
+
+int allocate_pid(void){
+	int i,flag=1;
+	for(i=0; i<(MAX_P-MIN_P); i++){
+		if(pid[i]==0){
+			pthread_mutex_lock(&p);
+			pid[i]=1;
+			flag=0;
+			pthread_mutex_unlock(&p);
+			break;
+		}
+  	}	
+
+	if(flag==-1)
+	return -1;
+	else
+	return i;
+
+}
+
+
+
+
+void release_pid(int id){
+	pid[id]=0;
+}
+
+
+
+void *threadCreate(){
+   
+    
+	int idaloc = allocate_pid();
+
+
+	if(idaloc==-1){
+		printf("***No PID available***\n");
+    	}
+    	else{
+    		printf("Thread No :: PID ::%d:: is Allocated\n",idaloc+MIN_P);
+        	int r=1+rand()%10;
+        	sleep(r);
+		printf("Thread No :: PID ::%d:: is Released after %d seconds\n",idaloc+MIN_P,r);
+        	release_pid(idaloc);
+    	}
+    	pthread_exit(NULL);
+}
+
+
+int main(){
+	int i;
+	int ch =1;
+	int n;
+	pthread_mutex_init(&p,NULL);
+	while(ch==1){
+		printf("||Enter The Number Of Threads You Want To Process||\n"); 
+		fflush(stdin);
+		scanf("%d",&n);
+		
+	
+		fflush(stdin);
+		if(n>900||n<0)
+			printf("Enter A integer Value LESSER than 900 or GREATER than 0\n");
+		else{
+			fflush(stdin);
+			pthread_t process[n];
+			for(i=0; i<n; i++){
+				if(pthread_create(&process[i],NULL,threadCreate,(void*)&i))
+				return -1*printf("!!!ERROR IN THREAD %d CREATION!!!\n",i);    
+			}
+			for(i=0; i<n; i++)
+				pthread_join(process[i],NULL);
+		}
+	
+		printf("\n");
+		printf("Enter 1 To Continue Or Press Any Key To Exit\n");
+		scanf("%d",&ch);
+	}
+	printf("SUCCESSFULLY ENDED\n");
+	exit(0);
+}
